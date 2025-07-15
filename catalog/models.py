@@ -22,25 +22,26 @@ class Category(models.Model):
 
 class Product(models.Model):
 
-    name = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
+    name =  models.CharField(
+        max_length=150,
         verbose_name="Название продукта",
         help_text="Введите название продукта",
-        null=True,
-        blank=True,
-        related_name='products'
     )
+
     description = models.TextField(
         verbose_name="Описание продукта", help_text="Введите описание продукта"
     )
     image = models.ImageField(
-        upload_to="catalog/image", help_text="Загрузите фотографию продукта"
+        upload_to="catalog/image", help_text="Загрузите фотографию продукта", blank=True, null=True,
     )
-    category = models.CharField(
-        max_length=150,
-        verbose_name="Категория продукта",
-        help_text="Введите категорию продукта",
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        verbose_name="Категория",
+        help_text="Выберете категорию продукта",
+        null=True,
+        blank=True,
+        related_name='products'
     )
     price = models.IntegerField(
         verbose_name="Цена продукта", help_text="Введите цену продукта"
