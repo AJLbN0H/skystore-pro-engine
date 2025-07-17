@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import connection
 
 from catalog.models import Category, Product
 
@@ -9,8 +10,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        Product.objects.all().delete()
-        Category.objects.all().delete()
+        with connection.cursor() as cursor:
+            cursor.execute("TRUNCATE TABLE catalog_product RESTART IDENTITY CASCADE;")
+            cursor.execute("TRUNCATE TABLE catalog_category RESTART IDENTITY CASCADE;")
 
         category1, _ = Category.objects.get_or_create(
             name="Мясная продукция", description="мясо"
