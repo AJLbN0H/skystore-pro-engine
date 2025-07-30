@@ -3,11 +3,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from Django.settings import MEDIA_ROOT
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('catalog.urls', namespace='catalog'))
+    path('', include('catalog.urls', namespace='catalog')),
+    path('', include('blog.urls', namespace='blog'))
 ]
 
 if settings.DEBUG:

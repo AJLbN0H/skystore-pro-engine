@@ -1,0 +1,30 @@
+{% extends 'catalog/base.html' %}
+
+{% block tittle %}
+<div class="col-lg-6 col-md-8 mx-auto"><h1 class="fw-light">Подробная информация о посте</h1></div>
+{% endblock %}
+
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col">
+                <div class="card shadow-sm">{% if blog.preview %}
+                    <img src="{{ blog.preview.url }}" alt="Blog Preview">
+                {% else %}
+                    <img src="/static/default-image.jpg" alt="Default Image">
+                {% endif %}
+                    <p class="card-text h5" style="text-align: center">{{ blog.title }}</p>
+                    <div class="container mt-1">
+                        <p class="card-text">Содержание: {{ blog.content|truncatechars:100 }}</p>
+                        <p class="card-text">Количество просмотров: {{ blog.number_of_views }}</p>
+                        <p class="card-text">Дата публикации: {{ blog.created_at|date:"d M Y" }}</p>
+                        <div class="btn-group"><a class="btn btn-primary"
+                                                      href="{% url 'blog:blog_delete' blog.pk %}"
+                                                      role="button">Удалить</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  {% endblock %}
