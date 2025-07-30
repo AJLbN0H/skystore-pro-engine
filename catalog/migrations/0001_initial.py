@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         help_text="Загрузите фотографию продукта",
                         null=True,
-                        upload_to="catalog/image",
+                        upload_to="catalog/media",
                     ),
                 ),
                 (

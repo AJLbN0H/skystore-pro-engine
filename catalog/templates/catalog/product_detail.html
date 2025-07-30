@@ -1,4 +1,9 @@
 {% extends 'catalog/base.html' %}
+
+{% block tittle %}
+<div class="col-lg-6 col-md-8 mx-auto"><h1 class="fw-light">Подробная информация о продукте</h1></div>
+{% endblock %}
+
 {% block content %}
 <div class="album py-5 bg-body-tertiary">
     <div class="container">
@@ -12,4 +17,4 @@
                 <small class="text-body-secondary">{{ product.created_at|date:"d M Y" }}</small></div>
         </div>
     </div>
-</div> </div> </div> {% endblock %}
+</div>  {% endblock %}
