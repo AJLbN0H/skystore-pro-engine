@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Category(models.Model):
 
     name = models.CharField(
@@ -22,7 +23,7 @@ class Category(models.Model):
 
 class Product(models.Model):
 
-    name =  models.CharField(
+    name = models.CharField(
         max_length=150,
         verbose_name="Название продукта",
         help_text="Введите название продукта",
@@ -32,7 +33,10 @@ class Product(models.Model):
         verbose_name="Описание продукта", help_text="Введите описание продукта"
     )
     image = models.ImageField(
-        upload_to="catalog/", help_text="Загрузите фотографию продукта", blank=True, null=True,
+        upload_to="catalog/",
+        help_text="Загрузите фотографию продукта",
+        blank=True,
+        null=True,
     )
     category = models.ForeignKey(
         Category,
@@ -41,7 +45,7 @@ class Product(models.Model):
         help_text="Выберете категорию продукта",
         null=True,
         blank=True,
-        related_name='products'
+        related_name="products",
     )
     price = models.IntegerField(
         verbose_name="Цена продукта", help_text="Введите цену продукта"
