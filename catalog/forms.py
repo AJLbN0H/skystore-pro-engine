@@ -19,7 +19,7 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ["name", "description", "image", "category", "price"]
+        fields = ["name", "description", "image", "category", "price", 'publication_sign']
 
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
@@ -37,6 +37,9 @@ class ProductForm(forms.ModelForm):
         )
         self.fields["price"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Введите цену продукта"}
+        )
+        self.fields["publication_sign"].widget.attrs.update(
+            {"class": "form-check"}
         )
 
     def clean_name(self):
@@ -61,5 +64,5 @@ class ProductForm(forms.ModelForm):
 
         price = self.cleaned_data.get("price")
         if price < 0:
-            raise ValidationError(f"Цена не мржет быть отрицательной")
+            raise ValidationError(f"Цена не может быть отрицательной")
         return price

@@ -27,9 +27,12 @@
                             <a class="btn btn-primary"
                                                       href="{% url 'catalog:product_update' product.pk %}"
                                                       role="button">Редактировать</a>
-                            <a class="btn btn-primary"
+                            {% if perms.products.can_delete_product %}
+                            <div class="btn-group"><a class="btn btn-primary"
                                                       href="{% url 'catalog:product_delete' product.pk %}"
                                                       role="button">Удалить</a></div>
+                            {% endif %}
+                            </div>
                             <small class="text-body-secondary">{{ product.created_at|date:"d M Y" }}</small></div>
                     </div>
                 </div>
