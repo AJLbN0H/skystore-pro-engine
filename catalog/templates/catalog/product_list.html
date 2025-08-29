@@ -24,10 +24,13 @@
                             <div class="btn-group"><a class="btn btn-primary"
                                                       href="{% url 'catalog:product_detail' product.pk %}"
                                                       role="button">Посмотреть</a>
+                            {% if user == product.owner %}
+                                {{ dog.owner }}
                             <a class="btn btn-primary"
                                                       href="{% url 'catalog:product_update' product.pk %}"
                                                       role="button">Редактировать</a>
-                            {% if perms.products.can_delete_product %}
+                            {% endif %}
+                            {% if perms.catalog.delete_product or user == product.owner %}
                             <div class="btn-group"><a class="btn btn-primary"
                                                       href="{% url 'catalog:product_delete' product.pk %}"
                                                       role="button">Удалить</a></div>
