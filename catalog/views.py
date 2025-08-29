@@ -1,4 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
     DetailView,
@@ -9,8 +11,9 @@ from django.views.generic import (
     DeleteView,
 )
 
+from users.models import User
 from .forms import ProductForm
-from .models import Product
+from .models import Product, Category
 
 
 class HomeTemplatesView(TemplateView):
@@ -34,6 +37,9 @@ class ProductListView(ListView):
     model = Product
     context_object_name = "products"
 
+    def get_queryset(self):
+        return Product.objects.filter(publication_sign=True)
+
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
@@ -43,10 +49,11 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.owner = self.request.user
         return super().form_valid(form)
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_update.html"
@@ -55,6 +62,40 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+    def post(self, request, pk):
+        product = get_object_or_404(self.model, pk=pk)
+        true_publication_sign = request.POST.get("publication_sign") == "on"
+
+        if product.publication_sign != true_publication_sign:
+            if not request.user.has_perm("catalog.can_unpublish_product"):
+                return HttpResponseForbidden("У вас нет прав для отмены публикации.")
+
+            else:
+                product.name = request.POST.get("name", product.name)
+                product.description = request.POST.get(
+                    "description", product.description
+                )
+                product.image = request.POST.get("image", product.image)
+                if request.POST.get("category"):
+                    product.category = Category.objects.get(
+                        id=request.POST.get("category")
+                    )
+                product.price = request.POST.get("price", product.price)
+                product.updated_at = request.POST.get("updated_at", product.updated_at)
+                product.publication_sign = False
+                product.save()
+        else:
+            product.name = request.POST.get("name", product.name)
+            product.description = request.POST.get("description", product.description)
+            product.image = request.POST.get("image", product.image)
+            if request.POST.get("category"):
+                product.category = Category.objects.get(id=request.POST.get("category"))
+            product.price = request.POST.get("price", product.price)
+            product.updated_at = request.POST.get("updated_at", product.updated_at)
+            product.save()
+
+        return redirect("catalog:product_list")
 
 
 class ProductDeleteView(DeleteView):
@@ -65,3 +106,16 @@ class ProductDeleteView(DeleteView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+
+        if not request.user.has_perm("catalog.delete_product"):
+            if self.request.user != product.owner:
+                print(self.request.user)
+                print(product.owner)
+                return HttpResponseForbidden("У вас нет прав для удаления продукта.")
+
+        product.delete()
+
+        return redirect("catalog:product_list")
