@@ -1,7 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.generic import (
     DetailView,
     ListView,
@@ -11,9 +14,9 @@ from django.views.generic import (
     DeleteView,
 )
 
-from users.models import User
 from .forms import ProductForm
 from .models import Product, Category
+from .services import ProductService
 
 
 class HomeTemplatesView(TemplateView):
@@ -24,6 +27,7 @@ class ContactsTemplateView(TemplateView):
     template_name = "catalog/contacts.html"
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductDetailView(LoginRequiredMixin, DetailView):
     model = Product
     context_object_name = "product"
@@ -38,7 +42,11 @@ class ProductListView(ListView):
     context_object_name = "products"
 
     def get_queryset(self):
-        return Product.objects.filter(publication_sign=True)
+        queryset = cache.get('product_list_queryset')
+        if not queryset:
+            queryset = super().get_queryset()
+            cache.set('product_list_queryset', queryset, 60 * 15)
+        return queryset and Product.objects.filter(publication_sign=True)
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -119,3 +127,13 @@ class ProductDeleteView(DeleteView):
         product.delete()
 
         return redirect("catalog:product_list")
+
+
+class ProductCategoryView(ListView):
+    model = Product
+    template_name = "catalog/product_category.html"
+    context_object_name = 'products_category'
+
+    def get_queryset(self):
+        return ProductService.output_list_of_products_in_the_specified_category(self.kwargs['category_id'])
+

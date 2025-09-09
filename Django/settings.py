@@ -68,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'catalog.services.categories_processor',
             ],
         },
     },
@@ -149,3 +150,12 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'Sasha.kel-1@yandex.ru'
 EMAIL_HOST_PASSWORD = 'pyywvqlpirohsmmd'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CACHE_ENABLED = True
+if CACHE_ENABLED:
+    CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+        }
+    }
