@@ -1,0 +1,60 @@
+{% extends 'catalog/base.html' %}
+
+{% block tittle %}
+<div class="col-lg-6 col-md-8 mx-auto"><h1 class="fw-light">Главная страница</h1>
+    <p class="lead text-body-secondary">Здесь располагаются продукты</p>
+    <p><a href="{% url 'catalog:product_create' %}" class="btn btn-primary my-2">Добавить продукт</a></p>
+
+    <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Выберите категорию продукта
+            </button>
+                <ul class="dropdown-menu">
+                    {% for category in all_categories %}
+                            <li>
+                            <a class="dropdown-item" href="{% url 'catalog:product_category' category.id %}">{{ category.name }}</a>
+                        {% empty %}
+                            <li class="dropdown-item">Нет категорий</li>
+                    {% endfor %}
+                </ul>
+            </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3"> {% for product in products %}
+            <div class="col">
+                <div class="card shadow-sm">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="Product image">
+                {% else %}
+                    <img src="/static/default-image.jpg" alt="Default Image">
+                {% endif %}
+                    <div class="card-body"><p class="card-text h5" style="text-align: center">{{ product.name }}</p>
+                        <p class="card-text">Описание: {{ product.description|truncatechars:100 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group"><a class="btn btn-primary"
+                                                      href="{% url 'catalog:product_detail' product.pk %}"
+                                                      role="button">Посмотреть</a>
+                            {% if user == product.owner %}
+                                {{ dog.owner }}
+                            <a class="btn btn-primary"
+                                                      href="{% url 'catalog:product_update' product.pk %}"
+                                                      role="button">Редактировать</a>
+                            {% endif %}
+                            {% if perms.catalog.delete_product or user == product.owner %}
+                            <div class="btn-group"><a class="btn btn-primary"
+                                                      href="{% url 'catalog:product_delete' product.pk %}"
+                                                      role="button">Удалить</a></div>
+                            {% endif %}
+                            </div>
+                            <small class="text-body-secondary">{{ product.created_at|date:"d M Y" }}</small></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div> {% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'catalog/base.html' %}
+
+{% block tittle %}
+<div class="col-lg-6 col-md-8 mx-auto"><h1 class="fw-light">Подробная информация о продукте</h1></div>
+{% endblock %}
+
+{% block content %}
+<div class="album py-5 bg-body-tertiary">
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col">
+                <div class="card shadow-sm">{% if product.preview %}
+                    <img src="{{ product.image.url }}" alt="Product image">
+                {% else %}
+                    <img src="/static/default-image.jpg" alt="Default Image">
+                {% endif %}
+                    <p class="card-text h5" style="text-align: center">{{ product.name }}</p>
+                    <p class="card-text">Описание: {{ product.description|truncatechars:100 }}</p>
+                    <p class="card-text">Цена: {{ product.price }}</p>
+                    <p class="card-text">Категория: {{ product.category }}</p></div>
+                <small class="text-body-secondary">{{ product.created_at|date:"d M Y" }}</small></div>
+        </div>
+    </div>
+</div>  {% endblock %}
